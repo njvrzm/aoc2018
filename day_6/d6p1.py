@@ -1,4 +1,6 @@
-from collections import namedtuple, Counter
+from collections import namedtuple, Counter, defaultdict
+import random
+import re
 import sys
 
 _point = namedtuple('point', ('x', 'y'))
@@ -53,4 +55,32 @@ while active:
 
 [winner] = Counter(index for point, index in space.items() if index not in infinite).most_common(1)
 print(winner)
+import string
+letters = string.ascii_letters
+def random_color():
+    return '{}{}{}'.format(*(random.choice('89ABCEF') for _ in range(3)))
+
+colors = defaultdict(random_color)
+
+def lines():
+    for y in range(top, bottom + 1):
+        row = []
+        for x in range(leftmost, rightmost + 1):
+            if point(x, y) in space:
+                row.append(letters[space[point(x,y)]])
+        row = ''.join(row)
+        parts = [x[0] for x in re.findall(r'((.)\2*)', row)]
+        for part in parts:
+            yield '<span style="color:#{}">{}</span>'.format(colors[part[0]], 'O'*len(part))
+        yield '\n'
+
+
+
+
+from functools import partial
+with open('maaap.html', 'w') as out:
+    out.write('<html><div style="white-space: pre; font-family: monospace;font-size: 2px">')
+
+    print(*lines(), file=out, sep='')
+    out.write('</div></html>')
 
