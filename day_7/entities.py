@@ -30,6 +30,10 @@ class Worker:
         self.busy_until = 0
 
     def ready_at(self):
+        # This is really quite unnecessary but I was too enamored
+        # of the
+        #     doer = min(workers, key = Worker.ready_at)
+        # idiom to give it up.
         return self.busy_until
 
     def do(self, job):
