@@ -8,6 +8,7 @@ board = [0]
 score = {elf:0 for elf in elves}
 
 current = 0 # place, not marble
+lb = 0
 
 for elf, marble in zip(cycle(elves), range(1, narbles)):
     if marble % 23 == 0:
@@ -18,6 +19,8 @@ for elf, marble in zip(cycle(elves), range(1, narbles)):
     else:
         current = (current + 2) % len(board)
         board = board[:current] + [marble] + board[current:]
+#    if marble  == 23*971:
+#        import IPython;IPython.embed() # DELETEME
 
 print(max(score.values()))
 
