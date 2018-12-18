@@ -4,10 +4,7 @@ from util import neighbors, space, locus, find, swap, grave
 class Being:
     def __init__(self, kind):
         self.kind = kind
-        self.health = 0
-
-    def __lt__(self, other):
-        return locus[self] < locus[other]
+        self.points = 0
 
     def __str__(self):
         return self.kind.value
@@ -18,16 +15,16 @@ class Being:
 
     @property
     def alive(self):
-        return self.health > 0
+        return self.points > 0
 
     def __repr__(self):
-        return '<{} @ {} = {}>'.format(self.kind.name, locus[self], self.health)
+        return '<{} @ {} = {}>'.format(self.kind.name, locus[self], self.points)
 
 
 class Actor(Being):
     def __init__(self, kind):
         super().__init__(kind)
-        self.health = 200
+        self.points = 200
 
     @property
     def foes(self):
@@ -40,7 +37,9 @@ class Actor(Being):
     def fight(self):
         foes = self.foes
         if foes:
-            foe = min(foes, key = lambda foe:(foe.health, locus[foe]))
+            # min is stable in python 3; since foes is already in reading
+            # order, we only need to sort on points.
+            foe = min(foes, key = lambda foe:foe.points)
             foe.wound(self.kind.power)
 
     def move(self):
@@ -53,7 +52,7 @@ class Actor(Being):
     def wound(self, power):
         if not self.alive:
             raise ValueError("I'm already dead!")
-        self.health -= power
+        self.points -= power
         if not self.alive:
             ghost = Being(Habitor.Space)
             space[locus[self]] = ghost
